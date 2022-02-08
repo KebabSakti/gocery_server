@@ -12,8 +12,6 @@ Route::group(['prefix' => 'v1'], function() {
         //AUTH
         Route::group(['prefix' => 'auth'], function() {
             Route::post('access', [v1\CustomerAuthController::class, 'access']);
-            Route::post('register', [v1\CustomerAuthController::class, 'register']);
-
             Route::group(['middleware' => 'auth:customer'], function() {
                 Route::get('revoke', [v1\CustomerAuthController::class, 'revoke']);
             });

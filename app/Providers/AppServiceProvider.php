@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Services\CustomerAuthService;
 use Illuminate\Support\ServiceProvider;
+use App\Interfaces\CustomerAuthServiceInterface;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        //CUSTOMER AUTH
+        $this->app->bind(CustomerAuthServiceInterface::class, function () {
+            return new CustomerAuthService();
+        });
     }
 
     /**

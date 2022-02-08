@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\v1;
 
+use App\Models\CustomerFcm;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\CustomerFcm;
 use Illuminate\Support\Facades\Auth;
 
 class FcmTokenController extends Controller

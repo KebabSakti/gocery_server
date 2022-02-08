@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\v1;
 
-use Exception;
-use Illuminate\Http\Request;
 use App\Models\CustomerAccount;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
