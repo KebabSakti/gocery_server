@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers\v1;
 
-use App\Models\CustomerFcm;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Interfaces\FcmTokenServiceInterface;
 
 class FcmTokenController extends Controller
 {
+    private $service;
+
+    public function __construct(FcmTokenServiceInterface $service)
+    {   
+        $this->service = $service;
+    }
+
     public function store(Request $request)
     {
-        CustomerFcm::updateOrCreate(
-            [
-                'customer_account_uid' => Auth::user()->uid,
-                
-            ],
-            [
-                'uid' => Str::uuid(),
-                'fcm_token' => $request->fcm_token
-            ],
-        );
+        $this->service->storeToken($request);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\CustomerAccount;
 use App\Repositories\CustomerRepository;
 use App\Interfaces\CustomerAuthServiceInterface;
 
@@ -25,17 +24,17 @@ class CustomerAuthService implements CustomerAuthServiceInterface {
         //use email or phone number as username
         $username = $firebaseUserProvider->email ?? $firebaseUserProvider->phoneNumber;
 
-        $customer = CustomerRepository::showCustomerAccount($username);
+        $customer = CustomerRepository::showCustomerAccountByUsername($username);
 
         if($customer == null) {
             //create customer account
-            $customer = CustomerRepository::createCustomerAccount(
-                $firebaseUserProvider->username,
-                $firebaseUserProvider->displayName,
-                $firebaseUserProvider->email,
-                $firebaseUserProvider->phoneNumber,
-                $firebaseUserProvider->photoUrl,
-            );
+            $customer = CustomerRepository::createCustomerAccount([
+                'username' => $username,
+                'name' => $firebaseUserProvider->displayName,
+                'email' => $firebaseUserProvider->email,
+                'phone' => $firebaseUserProvider->phoneNumber,
+                'picture' => $firebaseUserProvider->photoUrl,
+            ]);
         }
 
         return $customer;

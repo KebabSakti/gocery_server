@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\v1;
 
-use Exception;
-use App\Models\Banner;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BannerResource;
+use App\Interfaces\BannerServiceInterface;
 
 class BannerController extends Controller
 {
+    private $service;
+
+    public function __construct(BannerServiceInterface $service)
+    {   
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $banners = Banner::orderBy('created_at', 'desc')->get();
+        $banners = $this->service->getAllBanner();
 
         $collections =  BannerResource::collection($banners);
 

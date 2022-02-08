@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers\v1;
 
-use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
-use Exception;
+use App\Interfaces\CategoryServiceInterface;
 
 class CategoryController extends Controller
 {
+    private $service;
+
+    public function __construct(CategoryServiceInterface $service)
+    {   
+        $this->service = $service;
+    }
+
     public function index()
     {
-        $categories = Category::orderBy('order_number', 'asc')->get();
+        $categories = $this->service->getAllcategory();
 
         $collections =  CategoryResource::collection($categories);
 
         return $collections;
-        
     }
 }

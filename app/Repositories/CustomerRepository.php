@@ -10,25 +10,25 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CustomerPointHistory;
 
 class CustomerRepository {
-    public static function createCustomerAccount($username, $name, $email, $phoneNumber, $picture)
+    public static function createCustomerAccount($param)
     {
-        DB::transaction(function () use($username, $name, $email, $phoneNumber, $picture) {
+        DB::transaction(function () use($param) {
             $uid = Str::uuid();
 
             //create customer account
             CustomerAccount::create([
                 'uid' => $uid,
-                'username' => $username,
+                'username' => $param['username'],
             ]);
 
             //create customer profile
             CustomerProfile::create([
                 'customer_account_uid'  => $uid,
                 'uid' => Str::uuid(),
-                'name' => $name,
-                'email' => $email,
-                'phone' => $phoneNumber,
-                'picture' => $picture,
+                'name' => $param['name'],
+                'email' => $param['email'],
+                'phone' => $param['phoneNumber'],
+                'picture' => $param['picture'],
             ]);
 
             //create customer point and history
@@ -46,9 +46,16 @@ class CustomerRepository {
         });
     }
 
-    public static function showCustomerAccount($username)
+    public static function showCustomerAccountByUsername($username)
     {
         $customer = CustomerAccount::where('username', $username)->first();
+
+        return $customer;
+    }
+
+    public static function showCustomerAccountById($id)
+    {
+        $customer = CustomerAccount::find($id);
 
         return $customer;
     }
