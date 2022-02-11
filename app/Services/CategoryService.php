@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Interfaces\CategoryServiceInterface;
-use App\Repositories\CategoryRepository;
 
 class CategoryService implements CategoryServiceInterface {
     public function getAllcategory() {
-        $categories = CategoryRepository::getAllcategory();
+        $categories = Category::orderBy('order_number', 'asc')->get();
 
         return $categories;
     }

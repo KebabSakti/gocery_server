@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Interfaces\BannerServiceInterface;
+use App\Interfaces\BundleServiceInterface;
 use App\Interfaces\CategoryServiceInterface;
 use App\Services\FcmTokenService;
 use App\Services\CustomerAuthService;
@@ -14,6 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Interfaces\CustomerAccountServiceInterface;
 use App\Interfaces\ProductServiceInterface;
 use App\Services\BannerService;
+use App\Services\BundleService;
 use App\Services\CategoryService;
 use App\Services\ProductService;
 
@@ -54,6 +56,11 @@ class AppServiceProvider extends ServiceProvider
         //PRODUCT
         $this->app->bind(ProductServiceInterface::class, function () {
             return new ProductService();
+        });
+
+        //BUNDLE
+        $this->app->bind(BundleServiceInterface::class, function () {
+            return new BundleService();
         });
     }
 

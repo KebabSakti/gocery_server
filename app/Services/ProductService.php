@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use App\Models\ProductFavourite;
+use App\Models\ProductViewHistory;
+use App\Http\Resources\ProductResource;
 use App\Interfaces\ProductServiceInterface;
 
 class ProductService implements ProductServiceInterface {
@@ -19,15 +21,15 @@ class ProductService implements ProductServiceInterface {
             $query->where('products.shipping', $request->shipping);
         }
 
-        if($request->has('category')) {
+        if(!empty($request->category)) {
             $query->where('products.category_uid', $request->category);
         }
 
-        if($request->has('name')) {
+        if(!empty($request->name)) {
             $query->where('products.name', 'like', '%'.$request->name.'%');
         }
 
-        if($request->has('bundle')) {
+        if(!empty($request->bundle)) {
             $query->whereIn('products.uid', function($q) use($request) {
                 $q->select('bundle_items.product_uid')
                   ->from('bundle_items')
@@ -68,14 +70,19 @@ class ProductService implements ProductServiceInterface {
         return $query;
     }
 
-    public function getProductByUid($uid) {
-        $product = Product::where('uid', $uid)->first();
+    public function getProductByUid($request) {
+        $product = Product::where('uid', $request->uid)->first();
+
+        ProductViewHistory::create([
+                'customer_account_uid' => $request->user()->uid,
+                'product_uid' => $request->uid,
+            ]);
 
         return $product;
     }
 
     public function toggleProductFavourite($request) {
-        $favourite = ProductFavourite::where('uid', $request->uid)
+        $favourite = ProductFavourite::where('product_uid', $request->uid)
                                      ->where('customer_account_uid', $request->user()->uid)
                                      ->first();
 
@@ -88,5 +95,9 @@ class ProductService implements ProductServiceInterface {
         }else{
             $favourite->delete();
         }
+
+        $product = new ProductResource(Product::where('uid', $request->uid)->first());
+
+        return $product;
     }
 }

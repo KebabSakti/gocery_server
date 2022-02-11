@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\CustomerAccount;
 use App\Interfaces\CustomerAccountServiceInterface;
-use App\Repositories\CustomerRepository;
 
 class CustomerAccountService implements CustomerAccountServiceInterface {
     public function getCustomerAccount($id) {
-        $customer = CustomerRepository::showCustomerAccountById($id);
+        $customer = CustomerAccount::find($id);
 
         return $customer;
     }

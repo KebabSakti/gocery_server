@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Banner;
 use App\Interfaces\BannerServiceInterface;
-use App\Repositories\BannerRepository;
 
 class BannerService implements BannerServiceInterface {
     public function getAllBanner() {
-        $banners = BannerRepository::getAllBanner();
+        $banners = Banner::orderBy('created_at', 'desc')->get();
 
         return $banners;
     }

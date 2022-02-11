@@ -4,17 +4,20 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BundleResource;
-use App\Models\Bundle;
-use Illuminate\Http\Request;
+use App\Interfaces\BundleServiceInterface;
 
 class BundleController extends Controller
 {
-    public function index(Request $request)
+    private $service;
+
+    public function __construct(BundleServiceInterface $service)
+    {   
+        $this->service = $service;
+    }
+
+    public function index()
     {
-        $bundles = Bundle::has('bundle_items')
-                         ->where('hidden', false)
-                         ->where('active', true)
-                         ->get();
+        $bundles = $this->service->getAllBundle();
 
         $collections =  BundleResource::collection($bundles);
 

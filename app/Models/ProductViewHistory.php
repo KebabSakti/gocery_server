@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ProductViewHistory extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
 }

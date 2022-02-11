@@ -161,6 +161,7 @@ class DatabaseSeeder extends Seeder
         //             'favourite' => mt_rand(1, 1000),
         //             'view' => mt_rand(1, 1000),
         //             'sold' => mt_rand(1, 1000),
+        //             'search' => mt_rand(1, 1000),
         //         ]);
         //     }
         // }

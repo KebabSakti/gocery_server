@@ -25,9 +25,9 @@ class ProductController extends Controller
         return $collections;
     }
 
-    public function show($uid)
+    public function show(Request $request)
     {
-        $product = $this->service->getProductByUid($uid);
+        $product = $this->service->getProductByUid($request);
 
         $resource = new ProductResource($product);
 
@@ -36,6 +36,8 @@ class ProductController extends Controller
 
     public function favourite(Request $request)
     {
-        $this->service->toggleProductFavourite($request);
+        $product = $this->service->toggleProductFavourite($request);
+
+        return $product;
     }
 }

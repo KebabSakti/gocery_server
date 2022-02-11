@@ -20,9 +20,7 @@ class CustomerAuthController extends Controller
     public function access(Request $request)
     {
         try {
-            $firebaseUser = $this->service->getFirebaseUser($request->token);
-
-            $customer = $this->service->giveUserAccess($firebaseUser);
+            $customer = $this->service->giveUserAccess($request->token);
 
             $customerAuthResource = new CustomerAuthResource($customer);
 
