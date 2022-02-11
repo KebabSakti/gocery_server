@@ -3,9 +3,7 @@
 namespace App\Interfaces;
 
 interface CustomerAuthServiceInterface {
-    // public function getFirebaseUser($token);
+    public function grantAccess($token);
 
-    public function giveUserAccess($token);
-
-    public function removeUserAccess($request);
+    public function revokeAccess($request);
 }

@@ -39,6 +39,7 @@ Route::group(['prefix' => 'v1'], function() {
                 Route::get('/', [v1\ProductController::class, 'index']);
                 Route::get('{uid}', [v1\ProductController::class, 'show']);
                 Route::post('favourite', [v1\ProductController::class, 'favourite']);
+                Route::post('statistic', [v1\ProductController::class, 'statistic']);
             });
 
             //BUNDLE

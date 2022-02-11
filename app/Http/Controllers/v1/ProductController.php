@@ -18,7 +18,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = $this->service->productFilterQuery($request)->paginate(10);
+        $products = $this->service->getFilteredProduct($request);
 
         $collections =  ProductResource::collection($products);
 

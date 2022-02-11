@@ -15,7 +15,6 @@ class CustomerAuthResource extends JsonResource
     public function toArray($request)
     {
         return [
-            // 'customer_account_model' => new CustomerAccountResource($this),
             'token' => $this->createToken($this->username)->plainTextToken,
         ];
     }

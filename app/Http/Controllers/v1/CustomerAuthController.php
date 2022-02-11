@@ -20,7 +20,7 @@ class CustomerAuthController extends Controller
     public function access(Request $request)
     {
         try {
-            $customer = $this->service->giveUserAccess($request->token);
+            $customer = $this->service->grantAccess($request->token);
 
             $customerAuthResource = new CustomerAuthResource($customer);
 
@@ -34,6 +34,6 @@ class CustomerAuthController extends Controller
 
     public function revoke(Request $request)
     {
-        $this->service->removeUserAccess($request);
+        $this->service->revokeAccess($request);
     }
 }

@@ -8,9 +8,11 @@ use App\Models\ProductFavourite;
 use App\Models\ProductViewHistory;
 use App\Http\Resources\ProductResource;
 use App\Interfaces\ProductServiceInterface;
+use App\Models\ProductStatistic;
+use PhpParser\Node\Stmt\Break_;
 
 class ProductService implements ProductServiceInterface {
-    public function productFilterQuery($request) {
+    public function getFilteredProduct($request) {
         $query =  Product::select('products.*')
                          ->join('product_statistics', 'products.uid', '=', 'product_statistics.product_uid')
                          ->where('products.active', true);
@@ -67,7 +69,7 @@ class ProductService implements ProductServiceInterface {
 
         //SORTING END====================================================
 
-        return $query;
+        return $query->paginate(10);
     }
 
     public function getProductByUid($request) {
@@ -100,4 +102,20 @@ class ProductService implements ProductServiceInterface {
 
         return $product;
     }
+
+    public function statistic($request) {
+        // $statistic = ProductStatistic::where('product_uid', $request->product_uid)->first();
+
+        // if($statistic == null) {
+        //     ProductStatistic
+        // }
+
+        // switch($request->type)
+        // {
+        //     case 'favourite':
+
+
+        }
+    }
+
 }

@@ -11,7 +11,7 @@ use App\Models\CustomerPointHistory;
 use App\Interfaces\CustomerAuthServiceInterface;
 
 class CustomerAuthService implements CustomerAuthServiceInterface {
-    public function giveUserAccess($token) {
+    public function grantAccess($token) {
         $firebaseUser = $this->getFirebaseUser($token);
 
         $firebaseUserProvider = $firebaseUser->providerData[0];
@@ -34,7 +34,7 @@ class CustomerAuthService implements CustomerAuthServiceInterface {
         return $customer;
     }
 
-    public function removeUserAccess($request) {
+    public function revokeAccess($request) {
         $user = $request->user();
 
         $user->tokens()->delete();
@@ -67,24 +67,22 @@ class CustomerAuthService implements CustomerAuthServiceInterface {
             CustomerProfile::create([
                 'customer_account_uid'  => $uid,
                 'uid' => Str::uuid(),
-                'name' => $param['name'],
-                'email' => $param['email'],
-                'phone' => $param['phoneNumber'],
-                'picture' => $param['picture'],
+                'name' => $param['name'] ?? null,
+                'email' => $param['email'] ?? null,
+                'phone' => $param['phoneNumber'] ?? null,
+                'picture' => $param['picture'] ?? null,
             ]);
 
-            //create customer point and history
+            //create customer point
             CustomerPoint::create([
                 'customer_account_uid' => $uid,
                 'uid' => Str::uuid(),
                 'point' => 0,
-    
-            ]);
-            CustomerPointHistory::create([
-                'customer_account_uid' => $uid,
-                'point' => 0,
-                'action' => 'IN',
             ]);
         });
+
+        $customer = CustomerAccount::where('username', $param['username'])->first();
+
+        return $customer;
     }
 }
