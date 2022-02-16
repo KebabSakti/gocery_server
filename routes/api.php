@@ -5,46 +5,62 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Route;
 
 //API V1
-Route::group(['prefix' => 'v1'], function() {
+Route::group(['prefix' => 'v1'], function () {
 
     //CUSTOMER
-    Route::group(['prefix' => 'customer'], function() {
+    Route::group(['prefix' => 'customer'], function () {
         //AUTH
-        Route::group(['prefix' => 'auth'], function() {
+        Route::group(['prefix' => 'auth'], function () {
             Route::post('access', [v1\CustomerAuthController::class, 'access']);
-            Route::group(['middleware' => 'auth:customer'], function() {
+            Route::group(['middleware' => 'auth:customer'], function () {
                 Route::get('revoke', [v1\CustomerAuthController::class, 'revoke']);
             });
         });
 
-        Route::group(['middleware' => 'auth:customer'], function() {
+        Route::group(['middleware' => 'auth:customer'], function () {
             //CUSTOMER ACCOUNT
-            Route::group(['prefix' => 'user'], function() {
+            Route::group(['prefix' => 'user'], function () {
                 Route::get('/', [v1\CustomerAccountController::class, 'show']);
                 Route::post('fcm', [v1\FcmTokenController::class, 'store']);
             });
 
             //CATEGORIES
-            Route::group(['prefix' => 'categories'], function() {
+            Route::group(['prefix' => 'categories'], function () {
                 Route::get('/', [v1\CategoryController::class, 'index']);
             });
 
             //BANNERS
-            Route::group(['prefix' => 'banners'], function() {
+            Route::group(['prefix' => 'banners'], function () {
                 Route::get('/', [v1\BannerController::class, 'index']);
             });
 
             //PRODUCT
-            Route::group(['prefix' => 'products'], function() {
+            Route::group(['prefix' => 'products'], function () {
                 Route::get('/', [v1\ProductController::class, 'index']);
-                Route::get('{uid}', [v1\ProductController::class, 'show']);
+                Route::get('{uid}/show', [v1\ProductController::class, 'show']);
+                Route::get('histories', [v1\ProductController::class, 'histories']);
                 Route::post('favourite', [v1\ProductController::class, 'favourite']);
                 Route::post('statistic', [v1\ProductController::class, 'statistic']);
             });
 
             //BUNDLE
-            Route::group(['prefix' => 'bundles'], function() {
+            Route::group(['prefix' => 'bundles'], function () {
                 Route::get('/', [v1\BundleController::class, 'index']);
+            });
+
+            //SEARCH
+            Route::group(['prefix' => 'searches'], function () {
+                Route::get('/', [v1\SearchController::class, 'index']);
+                Route::post('/', [v1\SearchController::class, 'store']);
+                Route::delete('/', [v1\SearchController::class, 'delete']);
+                Route::get('suggestions', [v1\SearchController::class, 'suggestion']);
+            });
+
+            //CART
+            Route::group(['prefix' => 'carts'], function () {
+                Route::get('/', [v1\CartController::class, 'index']);
+                Route::post('/', [v1\CartController::class, 'update']);
+                Route::delete('/', [v1\CartController::class, 'delete']);
             });
         });
     });

@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Cart extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+
+    public function cart_items()
+    {
+        return $this->hasMany(CartItem::class, 'cart_uid', 'uid');
+    }
 }

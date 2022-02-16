@@ -11,7 +11,7 @@ class BannerController extends Controller
     private $service;
 
     public function __construct(BannerServiceInterface $service)
-    {   
+    {
         $this->service = $service;
     }
 
@@ -19,9 +19,8 @@ class BannerController extends Controller
     {
         $banners = $this->service->getAllBanner();
 
-        $collections =  BannerResource::collection($banners);
+        $collections = BannerResource::collection($banners);
 
         return $collections;
-       
     }
 }

@@ -4,20 +4,24 @@ namespace App\Providers;
 
 use App\Interfaces\BannerServiceInterface;
 use App\Interfaces\BundleServiceInterface;
+use App\Interfaces\CartServiceInterface;
 use App\Interfaces\CategoryServiceInterface;
-use App\Services\FcmTokenService;
-use App\Services\CustomerAuthService;
-use Illuminate\Support\ServiceProvider;
-use App\Services\CustomerAccountService;
-use App\Interfaces\FcmTokenServiceInterface;
-use App\Interfaces\CustomerAuthServiceInterface;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Interfaces\CustomerAccountServiceInterface;
+use App\Interfaces\CustomerAuthServiceInterface;
+use App\Interfaces\FcmTokenServiceInterface;
 use App\Interfaces\ProductServiceInterface;
+use App\Interfaces\SearchServiceInterface;
 use App\Services\BannerService;
 use App\Services\BundleService;
+use App\Services\CartService;
 use App\Services\CategoryService;
+use App\Services\CustomerAccountService;
+use App\Services\CustomerAuthService;
+use App\Services\FcmTokenService;
 use App\Services\ProductService;
+use App\Services\SearchService;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -61,6 +65,16 @@ class AppServiceProvider extends ServiceProvider
         //BUNDLE
         $this->app->bind(BundleServiceInterface::class, function () {
             return new BundleService();
+        });
+
+        //SEARCH
+        $this->app->bind(SearchServiceInterface::class, function () {
+            return new SearchService();
+        });
+
+        //CART
+        $this->app->bind(CartServiceInterface::class, function () {
+            return new CartService();
         });
     }
 

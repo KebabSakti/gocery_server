@@ -2,17 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Banner;
-use App\Models\Bundle;
-use App\Models\BundleItem;
-use App\Models\Category;
+use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\CustomerAccount;
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
-use App\Models\ProductStatistic;
-use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -154,7 +150,6 @@ class DatabaseSeeder extends Seeder
         //             'type' => $shipping == 'TERJADWAL' ? 'GROCERY' : $type[$tKey],
         //         ]);
 
-
         //         ProductStatistic::create([
         //             'product_uid' => $pUid,
         //             'uid' => Str::uuid(),
@@ -210,28 +205,72 @@ class DatabaseSeeder extends Seeder
         // }
 
         //BUNDLES
-        for($b = 0; $b <= 4; $b++) {
-            $bUid = Str::uuid();
-            Bundle::create([
-                'uid' => $bUid,
-                'name' => $faker->realText(),
-                'description' => $faker->text(500),
-                'hidden' => false,
-                'active' => true,
-            ]);
+        // for($b = 0; $b <= 4; $b++) {
+        //     $bUid = Str::uuid();
+        //     Bundle::create([
+        //         'uid' => $bUid,
+        //         'name' => $faker->realText(),
+        //         'description' => $faker->text(500),
+        //         'hidden' => false,
+        //         'active' => true,
+        //     ]);
 
-            for($i = 0; $i<= mt_rand(10 , 50); $i++) {
-                $pUid = Product::inRandomOrder()->first()->uid;
-                $bItem = BundleItem::where('bundle_uid', $bUid)->where('product_uid', $pUid)->first();
+        //     for($i = 0; $i<= mt_rand(10 , 50); $i++) {
+        //         $pUid = Product::inRandomOrder()->first()->uid;
+        //         $bItem = BundleItem::where('bundle_uid', $bUid)->where('product_uid', $pUid)->first();
 
-                if($bItem == null) {
-                    BundleItem::create([
-                        'bundle_uid' => $bUid,
-                        'product_uid' => Product::inRandomOrder()->first()->uid,
-                        'uid' => Str::uuid(),
-                    ]);
+        //         if($bItem == null) {
+        //             BundleItem::create([
+        //                 'bundle_uid' => $bUid,
+        //                 'product_uid' => Product::inRandomOrder()->first()->uid,
+        //                 'uid' => Str::uuid(),
+        //             ]);
+        //         }
+        //     }
+        // }
+
+        DB::transaction(function () {
+            $customers = CustomerAccount::all();
+
+            foreach ($customers as $customer) {
+                $uid = Str::uuid();
+
+                Cart::create([
+                    'customer_account_uid' => $customer->uid,
+                    'uid' => $uid,
+                    'qty_total' => 0,
+                    'price_total' => 0,
+                ]);
+
+                for ($i = 0; $i <= mt_rand(1, 50); $i++) {
+                    $product = Product::inRandomOrder()->first();
+
+                    $item = CartItem::where('cart_uid', $uid)
+                        ->where('product_uid', $product->uid)
+                        ->first();
+
+                    if ($item == null) {
+                        $qty = mt_rand(1, 100);
+                        $total = $qty * $product->final_price;
+
+                        CartItem::create([
+                            'cart_uid' => $uid,
+                            'product_uid' => $product->uid,
+                            'uid' => Str::uuid(),
+                            'item_qty_total' => $qty,
+                            'item_price_total' => $total,
+                        ]);
+                    }
                 }
+
+                $cart = Cart::where('uid', $uid)->first();
+
+                $cart->update([
+                    'qty_total' => CartItem::where('cart_uid', $uid)->get()->sum('item_qty_total'),
+                    'price_total' => CartItem::where('cart_uid', $uid)->get()->sum('item_price_total'),
+                ]);
             }
-        }
+        });
+
     }
 }

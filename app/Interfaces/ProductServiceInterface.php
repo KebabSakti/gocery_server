@@ -10,4 +10,6 @@ interface ProductServiceInterface {
     public function toggleProductFavourite($request);
 
     public function statistic($request);
+
+    public function viewHistories($request);
 }
