@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\CustomerAccount;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -229,48 +227,28 @@ class DatabaseSeeder extends Seeder
         //     }
         // }
 
-        DB::transaction(function () {
-            $customers = CustomerAccount::all();
+        $customers = CustomerAccount::all();
 
-            foreach ($customers as $customer) {
-                $uid = Str::uuid();
+        foreach ($customers as $customer) {
+            for ($i = 0; $i <= mt_rand(5, 50); $i++) {
+                $product = Product::inRandomOrder()->first();
 
-                Cart::create([
-                    'customer_account_uid' => $customer->uid,
-                    'uid' => $uid,
-                    'qty_total' => 0,
-                    'price_total' => 0,
-                ]);
+                $item = CartItem::where('customer_account_uid', $customer->uid)->where('product_uid', $product->uid)->first();
 
-                for ($i = 0; $i <= mt_rand(1, 50); $i++) {
-                    $product = Product::inRandomOrder()->first();
+                if ($item == null) {
+                    $qty = mt_rand(1, 100);
+                    $total = $qty * $product->final_price;
 
-                    $item = CartItem::where('cart_uid', $uid)
-                        ->where('product_uid', $product->uid)
-                        ->first();
-
-                    if ($item == null) {
-                        $qty = mt_rand(1, 100);
-                        $total = $qty * $product->final_price;
-
-                        CartItem::create([
-                            'cart_uid' => $uid,
-                            'product_uid' => $product->uid,
-                            'uid' => Str::uuid(),
-                            'item_qty_total' => $qty,
-                            'item_price_total' => $total,
-                        ]);
-                    }
+                    CartItem::create([
+                        'customer_account_uid' => $customer->uid,
+                        'product_uid' => $product->uid,
+                        'uid' => Str::uuid(),
+                        'item_qty_total' => $qty,
+                        'item_price_total' => $total,
+                    ]);
                 }
-
-                $cart = Cart::where('uid', $uid)->first();
-
-                $cart->update([
-                    'qty_total' => CartItem::where('cart_uid', $uid)->get()->sum('item_qty_total'),
-                    'price_total' => CartItem::where('cart_uid', $uid)->get()->sum('item_price_total'),
-                ]);
             }
-        });
+        }
 
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CartResource;
+use App\Http\Resources\CartItemResource;
 use App\Interfaces\CartServiceInterface;
 use Illuminate\Http\Request;
 
@@ -20,7 +20,7 @@ class CartController extends Controller
     {
         $cart = $this->service->getCartItems($request);
 
-        $collections = new CartResource($cart);
+        $collections = CartItemResource::collection($cart);
 
         return $collections;
     }

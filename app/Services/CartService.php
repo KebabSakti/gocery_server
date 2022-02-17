@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Interfaces\CartServiceInterface;
-use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -13,52 +12,38 @@ class CartService implements CartServiceInterface
 {
     public function getCartItems($request)
     {
-        $cart = Cart::where('customer_account_uid', $request->user()->uid)->firstOrFail();
+        $cart = CartItem::where('customer_account_uid', $request->user()->uid)->orderBy('created_at', 'desc')->get();
 
         return $cart;
     }
 
     public function updateCarts($request)
     {
-        if (!empty($request->carts)) {
-            DB::transaction(function () use ($request) {
-                $cartUid = Str::uuid();
+        DB::transaction(function () use ($request) {
+            //clear items
+            $this->clearCart($request);
 
-                //clear items
-                $this->clearCart($request);
+            if (!empty($request->carts)) {
 
-                $qtyTotal = [];
-                $priceTotal = [];
-
-                //update cart item
+                //update with new items
                 foreach ($request->carts as $item) {
                     $product = Product::where('uid', $item['product_uid'])->firstOrFail();
 
-                    array_push($qtyTotal, $item['item_qty_total']);
-                    array_push($priceTotal, $item['item_qty_total'] * $product->final_price);
-
-                    CartItem::insert(
+                    CartItem::updateOrInsert(
                         [
-                            'cart_uid' => $cartUid,
+                            'customer_account_uid' => $request->user()->uid,
                             'product_uid' => $item['product_uid'],
                         ],
                         [
                             'uid' => Str::uuid(),
                             'item_qty_total' => $item['item_qty_total'],
                             'item_price_total' => $item['item_qty_total'] * $product->final_price,
-                            'note' => $item['note'],
+                            'note' => $item['note'] ?? null,
                         ],
                     );
                 }
-
-                //update cart
-                $this->updateCartTotal([
-                    'customer_account_uid' => $request->user()->uid,
-                    'qty_total' => array_sum($qtyTotal),
-                    'price_total' => array_sum($priceTotal),
-                ]);
-            });
-        }
+            }
+        });
     }
 
     public function clearCart($request)
@@ -66,17 +51,4 @@ class CartService implements CartServiceInterface
         CartItem::where('customer_account_uid', $request->user()->uid)->delete();
     }
 
-    private function updateCartTotal($param)
-    {
-        Cart::updateOrInsert(
-            [
-                'customer_account_uid' => $param['customer_account_uid'],
-            ],
-            [
-                'uid' => Str::uuid(),
-                'qty_total' => $param['qty_total'],
-                'price_total' => $param['price_total'],
-            ],
-        );
-    }
 }
