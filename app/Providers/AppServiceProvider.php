@@ -9,8 +9,11 @@ use App\Interfaces\CategoryServiceInterface;
 use App\Interfaces\CustomerAccountServiceInterface;
 use App\Interfaces\CustomerAuthServiceInterface;
 use App\Interfaces\FcmTokenServiceInterface;
+use App\Interfaces\OrderServiceInterface;
+use App\Interfaces\PaymentServiceInterface;
 use App\Interfaces\ProductServiceInterface;
 use App\Interfaces\SearchServiceInterface;
+use App\Interfaces\VoucherServiceInterface;
 use App\Services\BannerService;
 use App\Services\BundleService;
 use App\Services\CartService;
@@ -18,8 +21,11 @@ use App\Services\CategoryService;
 use App\Services\CustomerAccountService;
 use App\Services\CustomerAuthService;
 use App\Services\FcmTokenService;
+use App\Services\OrderService;
+use App\Services\PaymentService as ServicesPaymentService;
 use App\Services\ProductService;
 use App\Services\SearchService;
+use App\Services\VoucherService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 
@@ -75,6 +81,21 @@ class AppServiceProvider extends ServiceProvider
         //CART
         $this->app->bind(CartServiceInterface::class, function () {
             return new CartService();
+        });
+
+        //ORDER
+        $this->app->bind(OrderServiceInterface::class, function () {
+            return new OrderService();
+        });
+
+        //PAYMENT
+        $this->app->bind(PaymentServiceInterface::class, function () {
+            return new ServicesPaymentService();
+        });
+
+        //VOUCHER
+        $this->app->bind(VoucherServiceInterface::class, function () {
+            return new VoucherService();
         });
     }
 

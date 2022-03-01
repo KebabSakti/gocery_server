@@ -17,9 +17,12 @@ class CreatePaymentChannelsTable extends Migration
             $table->id();
             $table->string('uid');
             $table->string('channel_code');
+            $table->integer('ordering')->default(0);
             $table->text('name');
+            $table->text('currency')->default('IDR');
             $table->text('channel_category');
             $table->text('picture');
+            $table->boolean('default')->default(false);
             $table->boolean('active')->default(false);
             $table->timestamps();
         });

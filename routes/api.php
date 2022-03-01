@@ -62,6 +62,25 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::post('/', [v1\CartController::class, 'update']);
                 Route::delete('/', [v1\CartController::class, 'delete']);
             });
+
+            //ORDER
+            Route::group(['prefix' => 'orders'], function () {
+                Route::get('addresses', [v1\OrderController::class, 'address']);
+                Route::get('fees', [v1\OrderController::class, 'fee']);
+                Route::get('times', [v1\OrderController::class, 'time']);
+            });
+
+            //VOUCHER
+            Route::group(['prefix' => 'vouchers'], function () {
+                Route::get('/', [v1\VoucherController::class, 'index']);
+                Route::get('default', [v1\VoucherController::class, 'default_voucher']);
+            });
+
+            //PAYMENT
+            Route::group(['prefix' => 'payments'], function () {
+                Route::get('channels', [v1\PaymentController::class, 'channel']);
+                Route::get('channels/default', [v1\PaymentController::class, 'channel_default']);
+            });
         });
     });
 

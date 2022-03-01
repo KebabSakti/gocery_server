@@ -23,6 +23,7 @@ class CreatePartnersTable extends Migration
             $table->enum('type', ['GAS', 'GROCERY', 'OTHER']);
             $table->text('latitude')->nullable();
             $table->text('longitude')->nullable();
+            $table->boolean('exclusive')->default(false);
             $table->boolean('online')->default(false);
             $table->boolean('active')->default(false);
             $table->timestamps();

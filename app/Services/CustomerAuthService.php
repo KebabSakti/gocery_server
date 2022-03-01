@@ -2,16 +2,17 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Str;
-use App\Models\CustomerPoint;
+use App\Interfaces\CustomerAuthServiceInterface;
 use App\Models\CustomerAccount;
+use App\Models\CustomerPoint;
 use App\Models\CustomerProfile;
 use Illuminate\Support\Facades\DB;
-use App\Models\CustomerPointHistory;
-use App\Interfaces\CustomerAuthServiceInterface;
+use Illuminate\Support\Str;
 
-class CustomerAuthService implements CustomerAuthServiceInterface {
-    public function grantAccess($token) {
+class CustomerAuthService implements CustomerAuthServiceInterface
+{
+    public function grantAccess($token)
+    {
         $firebaseUser = $this->getFirebaseUser($token);
 
         $firebaseUserProvider = $firebaseUser->providerData[0];
@@ -21,7 +22,7 @@ class CustomerAuthService implements CustomerAuthServiceInterface {
 
         $customer = CustomerAccount::where('username', $username)->first();
 
-        if($customer == null) {
+        if ($customer == null) {
             $customer = $this->createCustomerAccount([
                 'username' => $username,
                 'name' => $firebaseUserProvider->displayName,
@@ -34,15 +35,17 @@ class CustomerAuthService implements CustomerAuthServiceInterface {
         return $customer;
     }
 
-    public function revokeAccess($request) {
+    public function revokeAccess($request)
+    {
         $user = $request->user();
 
         $user->tokens()->delete();
     }
 
-    private function getFirebaseUser($token) {
+    private function getFirebaseUser($token)
+    {
         $firebaseAuth = app('firebase.auth');
-            
+
         $verifiedIdToken = $firebaseAuth->verifyIdToken($token);
 
         $uid = $verifiedIdToken->claims()->get('sub');
@@ -54,7 +57,7 @@ class CustomerAuthService implements CustomerAuthServiceInterface {
 
     private function createCustomerAccount($param)
     {
-        DB::transaction(function () use($param) {
+        DB::transaction(function () use ($param) {
             $uid = Str::uuid();
 
             //create customer account
@@ -65,7 +68,7 @@ class CustomerAuthService implements CustomerAuthServiceInterface {
 
             //create customer profile
             CustomerProfile::create([
-                'customer_account_uid'  => $uid,
+                'customer_account_uid' => $uid,
                 'uid' => Str::uuid(),
                 'name' => $param['name'] ?? null,
                 'email' => $param['email'] ?? null,
