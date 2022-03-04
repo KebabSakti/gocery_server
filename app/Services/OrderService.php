@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\RequestCourier;
 use App\Interfaces\OrderServiceInterface;
 use App\Models\Partner;
 use App\Models\ShippingAddress;
@@ -51,6 +52,30 @@ class OrderService implements OrderServiceInterface
 
         return $times;
     }
+
+    public function findCourier($request)
+    {
+        // $couriers = CourierAccount::selectRaw('courier_accounts.partner_uid, courier_profiles.*')
+        //     ->join('courier_profiles', 'courier_accounts.uid', '=', 'courier_profiles.courier_account_uid')
+        //     ->where('courier_accounts.active', true)
+        //     ->where('courier_profiles.status', 'READY')
+        //     ->get();
+
+        $partners = $request->partners;
+
+        foreach ($partners as $partner) {
+            event(new RequestCourier($partner->uid, $request->order_uid));
+        }
+    }
+
+    public function acceptOrder($request)
+    {}
+
+    public function rejectOrder($request)
+    {}
+
+    public function cancelOrder($request)
+    {}
 
     public function submitOrder($request)
     {}

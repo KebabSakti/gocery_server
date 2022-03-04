@@ -21,6 +21,7 @@ class CreateCourierProfilesTable extends Migration
             $table->text('email')->nullable();
             $table->text('phone')->nullable();
             $table->text('picture')->nullable();
+            $table->enum('status', ['READY', 'BUSY', 'OFFLINE'])->default('Offline');
             $table->timestamps();
         });
     }

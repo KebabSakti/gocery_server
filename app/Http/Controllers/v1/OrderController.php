@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CourierProfileResource;
 use App\Http\Resources\OrderFeeResource;
 use App\Http\Resources\ShippingAddressResource;
 use App\Http\Resources\ShippingTimeResource;
@@ -41,6 +42,15 @@ class OrderController extends Controller
         $times = $this->service->getShippingTimes($request);
 
         $resource = ShippingTimeResource::collection($times);
+
+        return $resource;
+    }
+
+    public function find_courier(Request $request)
+    {
+        $couriers = $this->service->findCourier($request);
+
+        $resource = CourierProfileResource::collection($couriers);
 
         return $resource;
     }

@@ -10,5 +10,13 @@ interface OrderServiceInterface
 
     public function getShippingTimes($request);
 
+    public function findCourier($request);
+
+    public function acceptOrder($request);
+
+    public function rejectOrder($request);
+
+    public function cancelOrder($request);
+
     public function submitOrder($request);
 }

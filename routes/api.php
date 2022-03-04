@@ -68,6 +68,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('addresses', [v1\OrderController::class, 'address']);
                 Route::get('fees', [v1\OrderController::class, 'fee']);
                 Route::get('times', [v1\OrderController::class, 'time']);
+                Route::get('couriers/finds', [v1\OrderController::class, 'find_courier']);
             });
 
             //VOUCHER
@@ -81,6 +82,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('channels', [v1\PaymentController::class, 'channel']);
                 Route::get('channels/default', [v1\PaymentController::class, 'channel_default']);
             });
+
         });
     });
 
