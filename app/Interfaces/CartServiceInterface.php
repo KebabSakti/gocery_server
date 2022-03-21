@@ -9,4 +9,6 @@ interface CartServiceInterface
     public function updateCarts($request);
 
     public function clearCart($request);
+
+    public function stock($request);
 }

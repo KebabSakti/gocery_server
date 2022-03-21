@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Broadcast;
 |
  */
 
-Broadcast::channel('channel.{id}', function ($user, $id) {
+Broadcast::channel('partner.{id}', function ($user, $id) {
     return true;
-}, ['guards' => ['customer']]);
+});
+
+Broadcast::channel('customer.{id}', function ($user, $id) {
+    return true;
+});

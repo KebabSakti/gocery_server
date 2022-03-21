@@ -34,4 +34,11 @@ class CartController extends Controller
     {
         $this->service->clearCart($request);
     }
+
+    public function stock(Request $request)
+    {
+        $data = $this->service->stock($request);
+
+        return response()->json($data > 0 ? true : false);
+    }
 }

@@ -17,6 +17,8 @@ class CreateShippingTimesTable extends Migration
             $table->id();
             $table->text('uid');
             $table->time('time');
+            $table->integer('preparation');
+            $table->time('delivery');
             $table->timestamps();
         });
     }

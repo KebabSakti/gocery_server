@@ -51,4 +51,17 @@ class CartService implements CartServiceInterface
         CartItem::where('customer_account_uid', $request->user()->uid)->delete();
     }
 
+    public function stock($request)
+    {
+        $uids = explode(',', preg_replace('/\s+/', '', $request->uids));
+
+        $datas = Product::where('stok', '>', 0)
+            ->whereIn('uid', $uids)
+            ->get();
+
+        $total = $datas->count();
+
+        return $total;
+    }
+
 }

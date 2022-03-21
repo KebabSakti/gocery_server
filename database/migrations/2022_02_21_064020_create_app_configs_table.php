@@ -18,6 +18,8 @@ class CreateAppConfigsTable extends Migration
             $table->text('uid');
             $table->text('key');
             $table->text('value');
+            $table->text('title');
+            $table->text('description')->nullable();
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

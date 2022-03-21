@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 //API V1
@@ -9,6 +10,9 @@ Route::group(['prefix' => 'v1'], function () {
 
     //CUSTOMER
     Route::group(['prefix' => 'customer'], function () {
+        //CHANNEL AUTHENTICATION
+        Broadcast::routes(['middleware' => ['auth:customer']]);
+
         //AUTH
         Route::group(['prefix' => 'auth'], function () {
             Route::post('access', [v1\CustomerAuthController::class, 'access']);
@@ -18,10 +22,13 @@ Route::group(['prefix' => 'v1'], function () {
         });
 
         Route::group(['middleware' => 'auth:customer'], function () {
+
             //CUSTOMER ACCOUNT
             Route::group(['prefix' => 'user'], function () {
                 Route::get('/', [v1\CustomerAccountController::class, 'show']);
                 Route::post('fcm', [v1\FcmTokenController::class, 'store']);
+
+                Route::get('event', [v1\CustomerAccountController::class, 'private_event']);
             });
 
             //CATEGORIES
@@ -61,6 +68,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/', [v1\CartController::class, 'index']);
                 Route::post('/', [v1\CartController::class, 'update']);
                 Route::delete('/', [v1\CartController::class, 'delete']);
+                Route::get('stocks', [v1\CartController::class, 'stock']);
             });
 
             //ORDER
@@ -83,7 +91,40 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('channels/default', [v1\PaymentController::class, 'channel_default']);
             });
 
+            //CHANNEL EVENT
+            Route::group(['prefix' => 'events'], function () {
+                Route::post('courier/request/status', [v1\CustomerEventController::class, 'courier_request_status']);
+            });
+
         });
+    });
+
+    //PARTNER
+    Route::group(['prefix' => 'partner'], function () {
+        //CHANNEL AUTHENTICATION
+        Broadcast::routes(['middleware' => ['auth:partner']]);
+
+        //AUTH
+        Route::group(['prefix' => 'auth'], function () {
+            Route::post('access', [v1\PartnerAuthController::class, 'access']);
+
+            Route::group(['middleware' => 'auth:partner'], function () {
+                Route::get('revoke', [v1\PartnerAuthController::class, 'revoke']);
+            });
+        });
+
+        Route::group(['middleware' => 'auth:partner'], function () {
+            Route::group(['prefix' => 'accounts'], function () {
+                Route::get('/', [v1\CourierAccountController::class, 'account']);
+                Route::post('status', [v1\CourierAccountController::class, 'status']);
+            });
+        });
+
+        //TESTING ROUTE (DEV ONLY)
+        Route::group(['prefix' => 'dev'], function () {
+            Route::get('partners', [v1\DevController::class, 'partners']);
+        });
+
     });
 
 });

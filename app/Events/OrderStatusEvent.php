@@ -4,26 +4,22 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RejectOrder implements ShouldBroadcast
+class OrderStatusEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public $order_uid;
-    public $courier_account_uid;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(String $order_uid, String $courier_account_uid)
+    public function __construct()
     {
-        $this->order_uid = $order_uid;
-        $this->courier_account_uid = $courier_account_uid;
+        //
     }
 
     /**
@@ -33,6 +29,6 @@ class RejectOrder implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('order.' . $this->order_uid);
+        return new PrivateChannel('channel-name');
     }
 }

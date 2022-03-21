@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Order;
-use App\Models\Voucher;
-use App\Models\VoucherHistory;
+use App\Models\AppConfig;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -331,11 +329,12 @@ class DatabaseSeeder extends Seeder
             //     }
             // }
 
-            // AppConfig::create([
-            //     'uid' => Str::uuid(),
-            //     'key' => 'TERJADWAL_FEE',
-            //     'value' => '10000',
-            // ]);
+            AppConfig::create([
+                'uid' => Str::uuid(),
+                'key' => 'PAYMENT_DURATION',
+                'value' => '1200',
+                'description' => 'Durasi pembayaran untuk non COD (Dalam satuan detik)',
+            ]);
 
             // ShippingTime::create([
             //     'uid' => Str::uuid(),
@@ -387,31 +386,31 @@ class DatabaseSeeder extends Seeder
             //     'active' => true,
             // ]);
 
-            for ($i = 0; $i < 1; $i++) {
-                // Voucher::create([
-                //     'uid' => Str::uuid(),
-                //     'title' => $faker->realText(20),
-                //     'code' => strtoupper($faker->word(5)),
-                //     'description' => $faker->realText(50),
-                //     'image' => 'https://loremflickr.com/350/350/face,person,actor?random=' . mt_rand(1, 100),
-                //     'max' => 3,
-                //     'amount' => mt_rand(1000, 10000),
-                //     'start_at' => Carbon::now(),
-                //     'expired_at' => Carbon::now()->addDays(mt_rand(1, 30)),
-                //     'hidden' => false,
-                //     'active' => true,
-                // ]);
+            // for ($i = 0; $i < 1; $i++) {
+            // Voucher::create([
+            //     'uid' => Str::uuid(),
+            //     'title' => $faker->realText(20),
+            //     'code' => strtoupper($faker->word(5)),
+            //     'description' => $faker->realText(50),
+            //     'image' => 'https://loremflickr.com/350/350/face,person,actor?random=' . mt_rand(1, 100),
+            //     'max' => 3,
+            //     'amount' => mt_rand(1000, 10000),
+            //     'start_at' => Carbon::now(),
+            //     'expired_at' => Carbon::now()->addDays(mt_rand(1, 30)),
+            //     'hidden' => false,
+            //     'active' => true,
+            // ]);
 
-                $order = Order::where('customer_account_uid', '6cd1282d-1830-45eb-8804-bd30d94b9364')->inRandomOrder()->first();
+            //     $order = Order::where('customer_account_uid', '6cd1282d-1830-45eb-8804-bd30d94b9364')->inRandomOrder()->first();
 
-                $voucher = Voucher::inRandomOrder()->first();
+            //     $voucher = Voucher::inRandomOrder()->first();
 
-                VoucherHistory::create([
-                    'voucher_uid' => 'f2a8d8a1-8f64-44e0-8120-37ef0e91160e',
-                    'order_uid' => $order->uid,
-                    'uid' => Str::uuid(),
-                ]);
-            }
+            //     VoucherHistory::create([
+            //         'voucher_uid' => 'f2a8d8a1-8f64-44e0-8120-37ef0e91160e',
+            //         'order_uid' => $order->uid,
+            //         'uid' => Str::uuid(),
+            //     ]);
+            // }
 
         });
 

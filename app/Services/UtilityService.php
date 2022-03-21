@@ -38,7 +38,7 @@ class UtilityService
             return 'LANGSUNG';
         }
 
-        $format = Carbon::createFromFormat('H:i:s', $ship->time)->format('h:i A');
+        $format = Carbon::createFromFormat('H:i:s', $ship->delivery)->format('h:i A');
 
         return $format;
     }
@@ -58,22 +58,6 @@ class UtilityService
     public static function autoApplyVoucher($request)
     {
         $now = Carbon::now();
-
-        // $vouchers = Voucher::where('max', '>', function ($query) use ($request) {
-        //     $query->selectRaw('count(voucher_histories.voucher_uid)')
-        //         ->from('voucher_histories')
-        //         ->join('orders', 'voucher_histories.order_uid', '=', 'orders.uid')
-        //         ->where('orders.customer_account_uid', $request->user()->uid)
-        //         ->groupBy('voucher_histories.voucher_uid');
-        // })
-        //     ->whereDate('start_at', '<=', $now->toDateString())
-        //     ->whereDate('expired_at', '>=', $now->toDateString())
-        //     ->get();
-
-        // $vouchers = Voucher::with(['histories' => function ($query) use ($request) {
-        //     $query->join('orders', 'voucher_histories.order_uid', '=', 'orders.uid')
-        //         ->where('orders.customer_account_uid', $request->user()->uid);
-        // }])->get();
 
         $query = Voucher::whereDate('start_at', '<=', $now->toDateString())
             ->whereDate('expired_at', '>=', $now->toDateString())

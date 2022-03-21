@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CourierProfileResource extends JsonResource
+class PartnerResorce extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,13 +15,17 @@ class CourierProfileResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'courier_account_uid' => $this->courier_account_uid,
             'uid' => $this->uid,
             'name' => $this->name,
-            'email' => $this->email,
+            'address' => $this->address,
             'phone' => $this->phone,
-            'picture' => $this->picture,
-            'status' => $this->status,
+            'shipping' => $this->shipping,
+            'type' => $this->type,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'exclusive' => $this->exclusive,
+            'online' => $this->online,
+            'couriers' => CourierAccountResource::collection($this->couriers),
         ];
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\PublicEvent;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,7 +14,6 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::get('/{param}', function ($param = 'Hello') {
-    event(new PublicEvent(1, $param));
 
     return 'oke';
 });

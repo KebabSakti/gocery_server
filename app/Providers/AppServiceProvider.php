@@ -6,10 +6,13 @@ use App\Interfaces\BannerServiceInterface;
 use App\Interfaces\BundleServiceInterface;
 use App\Interfaces\CartServiceInterface;
 use App\Interfaces\CategoryServiceInterface;
+use App\Interfaces\CourierAccountServiceInterface;
 use App\Interfaces\CustomerAccountServiceInterface;
 use App\Interfaces\CustomerAuthServiceInterface;
+use App\Interfaces\CustomerEventServiceInterface;
 use App\Interfaces\FcmTokenServiceInterface;
 use App\Interfaces\OrderServiceInterface;
+use App\Interfaces\PartnerAuthServiceInterface;
 use App\Interfaces\PaymentServiceInterface;
 use App\Interfaces\ProductServiceInterface;
 use App\Interfaces\SearchServiceInterface;
@@ -18,10 +21,13 @@ use App\Services\BannerService;
 use App\Services\BundleService;
 use App\Services\CartService;
 use App\Services\CategoryService;
+use App\Services\CourierAccountService;
 use App\Services\CustomerAccountService;
 use App\Services\CustomerAuthService;
+use App\Services\CustomerEventService;
 use App\Services\FcmTokenService;
 use App\Services\OrderService;
+use App\Services\PartnerAuthService;
 use App\Services\PaymentService as ServicesPaymentService;
 use App\Services\ProductService;
 use App\Services\SearchService;
@@ -96,6 +102,23 @@ class AppServiceProvider extends ServiceProvider
         //VOUCHER
         $this->app->bind(VoucherServiceInterface::class, function () {
             return new VoucherService();
+        });
+
+        //EVENTS
+        $this->app->bind(CustomerEventServiceInterface::class, function () {
+            return new CustomerEventService();
+        });
+
+        //PARTNER==============================================================================//
+
+        //AUTH
+        $this->app->bind(PartnerAuthServiceInterface::class, function () {
+            return new PartnerAuthService();
+        });
+
+        //ACCOUNT
+        $this->app->bind(CourierAccountServiceInterface::class, function () {
+            return new CourierAccountService();
         });
     }
 

@@ -10,4 +10,9 @@ class Partner extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function couriers()
+    {
+        return $this->hasMany(CourierAccount::class, 'partner_uid', 'uid');
+    }
 }

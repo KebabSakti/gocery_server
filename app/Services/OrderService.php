@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Events\RequestCourier;
 use App\Interfaces\OrderServiceInterface;
 use App\Models\Partner;
 use App\Models\ShippingAddress;
@@ -39,8 +38,9 @@ class OrderService implements OrderServiceInterface
 
         $shippings = $query->get()->groupBy('type');
 
+        $ship = [];
         foreach ($shippings as $item) {
-            $ship[] = $item[0];
+            array_push($ship, $item[0]);
         }
 
         return $ship;
@@ -64,7 +64,7 @@ class OrderService implements OrderServiceInterface
         $partners = $request->partners;
 
         foreach ($partners as $partner) {
-            event(new RequestCourier($partner->uid, $request->order_uid));
+            // event(new RequestCourier($partner->uid, $request->order_uid));
         }
     }
 
