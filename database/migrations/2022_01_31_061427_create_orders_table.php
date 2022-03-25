@@ -25,7 +25,6 @@ class CreateOrdersTable extends Migration
             $table->decimal('voucher_deduction', 12, 2)->default(0.00);
             $table->decimal('point_deduction', 12, 2)->default(0.00);
             $table->decimal('pay_total', 12, 2);
-            $table->text('payment');
             $table->timestamps();
         });
     }

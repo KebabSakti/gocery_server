@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentChannelResource;
 use App\Interfaces\PaymentServiceInterface;
+use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
@@ -31,5 +32,12 @@ class PaymentController extends Controller
         $result = new PaymentChannelResource($channel);
 
         return $result;
+    }
+
+    public function ewallet(Request $request)
+    {
+        $response = $this->service->ewallet($request);
+
+        return $response->body();
     }
 }

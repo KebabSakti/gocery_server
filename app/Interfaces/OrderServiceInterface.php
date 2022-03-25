@@ -19,4 +19,6 @@ interface OrderServiceInterface
     public function cancelOrder($request);
 
     public function submitOrder($request);
+
+    public function checkItemStock($request);
 }

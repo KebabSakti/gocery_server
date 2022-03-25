@@ -23,6 +23,7 @@ class PaymentChannelResource extends JsonResource
             'picture' => $this->picture,
             'fee' => $this->fee,
             'fee_type' => $this->fee_type,
-        ];
+            'min' => $this->min,
+            'max' => $this->max];
     }
 }

@@ -54,4 +54,16 @@ class OrderController extends Controller
 
         return $resource;
     }
+
+    public function stock(Request $request)
+    {
+        $data = $this->service->checkItemStock($request);
+
+        return response()->json($data > 0 ? true : false);
+    }
+
+    public function store(Request $request)
+    {
+
+    }
 }

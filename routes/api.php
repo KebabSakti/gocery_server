@@ -68,7 +68,6 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('/', [v1\CartController::class, 'index']);
                 Route::post('/', [v1\CartController::class, 'update']);
                 Route::delete('/', [v1\CartController::class, 'delete']);
-                Route::get('stocks', [v1\CartController::class, 'stock']);
             });
 
             //ORDER
@@ -77,6 +76,8 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('fees', [v1\OrderController::class, 'fee']);
                 Route::get('times', [v1\OrderController::class, 'time']);
                 Route::get('couriers/finds', [v1\OrderController::class, 'find_courier']);
+                Route::get('stocks', [v1\OrderController::class, 'stock']);
+                Route::post('/', [v1\OrderController::class, 'store']);
             });
 
             //VOUCHER
@@ -89,6 +90,7 @@ Route::group(['prefix' => 'v1'], function () {
             Route::group(['prefix' => 'payments'], function () {
                 Route::get('channels', [v1\PaymentController::class, 'channel']);
                 Route::get('channels/default', [v1\PaymentController::class, 'channel_default']);
+                Route::post('ewallet', [v1\PaymentController::class, 'ewallet']);
             });
 
             //CHANNEL EVENT

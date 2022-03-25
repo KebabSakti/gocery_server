@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Interfaces\OrderServiceInterface;
 use App\Models\Partner;
+use App\Models\Product;
 use App\Models\ShippingAddress;
 use App\Models\ShippingTime;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class OrderService implements OrderServiceInterface
 {
@@ -78,5 +81,32 @@ class OrderService implements OrderServiceInterface
     {}
 
     public function submitOrder($request)
-    {}
+    {
+        DB::transaction(function () use ($request) {
+            ShippingAddress::create([
+                'order_uid' => $request->order_uid,
+                'uid' => Str::uuid(),
+                'place_id' => $request->place_id,
+                'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'note' => $request->note,
+                'name' => $request->name,
+                'phone' => $request->phone,
+            ]);
+        });
+    }
+
+    public function checkItemStock($request)
+    {
+        $uids = explode(',', preg_replace('/\s+/', '', $request->uids));
+
+        $datas = Product::where('stok', '>', 0)
+            ->whereIn('uid', $uids)
+            ->get();
+
+        $total = $datas->count();
+
+        return $total;
+    }
 }
