@@ -64,6 +64,6 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
-
+        $this->service->submitOrder($request);
     }
 }

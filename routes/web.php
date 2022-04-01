@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::get('/{param}', function ($param = 'Hello') {
-
+Route::get('/', function () {
     return 'oke';
 });

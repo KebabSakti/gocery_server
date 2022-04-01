@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Interfaces\OrderServiceInterface;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Partner;
 use App\Models\Product;
 use App\Models\ShippingAddress;
@@ -15,7 +17,7 @@ class OrderService implements OrderServiceInterface
     public function getLastAddressUsed($request)
     {
         $address = ShippingAddress::select('shipping_addresses.*')
-            ->join('orders', function ($join) use ($request) {
+            ->leftJoin('orders', function ($join) use ($request) {
                 $join->on('shipping_addresses.order_uid', '=', 'orders.uid')
                     ->where('orders.customer_account_uid', $request->user()->uid);
             })
@@ -72,27 +74,78 @@ class OrderService implements OrderServiceInterface
     }
 
     public function acceptOrder($request)
-    {}
+    {
+    }
 
     public function rejectOrder($request)
-    {}
+    {
+    }
 
     public function cancelOrder($request)
-    {}
+    {
+    }
 
     public function submitOrder($request)
     {
         DB::transaction(function () use ($request) {
+            $qty = [];
+            $price = [];
+            $shipping = [];
+            $app_fee = [];
+            $voucher = [];
+            $point = [];
+            $total = [];
+
+            //cart items
+            foreach ($request->items as $cartItem) {
+                $product = Product::where('uid', $cartItem['product_uid'])->firstOrFail();
+
+                OrderItem::create([
+                    'order_uid' => $request->uid,
+                    'product_uid' => $cartItem['product_uid'],
+                    'uid' => Str::uuid(),
+                    'name' => $product->name,
+                    'description' => $product->description,
+                    'image' => $product->image,
+                    'price' => $product->price,
+                    'discount' => $product->discount,
+                    'final_price' => $product->final_price,
+                    'unit' => $product->unit,
+                    'unit_count' => $product->unit_count,
+                    'min_order' => $product->min_order,
+                    'max_order' => $product->max_order,
+                    'stok' => $product->stok,
+                    'item_qty_total' => $cartItem['item_qty_total'],
+                    'item_price_total' => $product->final_price * $cartItem['item_qty_total'],
+                    'note' => $cartItem['note'],
+                ]);
+            }
+
+            //shipping address
             ShippingAddress::create([
-                'order_uid' => $request->order_uid,
+                'order_uid' => $request->uid,
                 'uid' => Str::uuid(),
-                'place_id' => $request->place_id,
-                'address' => $request->address,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'note' => $request->note,
-                'name' => $request->name,
-                'phone' => $request->phone,
+                'place_id' => $request->delivery['place_id'],
+                'address' => $request->delivery['address'],
+                'latitude' => $request->delivery['latitude'],
+                'longitude' => $request->delivery['longitude'],
+                'note' => $request->delivery['note'],
+                'name' => $request->delivery['name'],
+                'phone' => $request->delivery['phone'],
+            ]);
+
+            //order
+            Order::create([
+                'customer_account_uid' => $request->user()->uid,
+                'uid' => Str::uuid(),
+                'invoice' => 'INV-' . mt_rand(000001, 999999),
+                'qty_total' => $request->qty_total,
+                'price_total' => $request->price_total,
+                'shipping_fee' => $request->shipping_fee,
+                'app_fee' => $request->app_fee,
+                'voucher_deduction' => $request->voucher_deduction,
+                'point_deduction' => $request->point_deduction,
+                'pay_total' => $request->pay_total,
             ]);
         });
     }
