@@ -57,9 +57,14 @@ class OrderController extends Controller
 
     public function stock(Request $request)
     {
-        $data = $this->service->checkItemStock($request);
+        $this->service->checkItemStock($request);
 
-        return response()->json($data > 0 ? true : false);
+        // return response()->json($data > 0 ? true : false);
+    }
+
+    public function cancelOrder(Request $request)
+    {
+        $this->service->cancelOrder($request);
     }
 
     public function store(Request $request)

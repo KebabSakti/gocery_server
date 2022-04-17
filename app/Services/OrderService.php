@@ -2,12 +2,19 @@
 
 namespace App\Services;
 
+use App\Events\CourierRequestStatusEvent;
 use App\Interfaces\OrderServiceInterface;
+use App\Models\CourierOrder;
+use App\Models\CourierProfile;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderStatus;
 use App\Models\Partner;
+use App\Models\Payment;
+use App\Models\PaymentDetail;
 use App\Models\Product;
 use App\Models\ShippingAddress;
+use App\Models\ShippingDetail;
 use App\Models\ShippingTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -83,19 +90,90 @@ class OrderService implements OrderServiceInterface
 
     public function cancelOrder($request)
     {
+        DB::transaction(function () use ($request) {
+            // $orderItems = OrderItem::where('order_uid', $request->order_uid)->get();
+
+            // foreach ($orderItems as $item) {
+            //     //kembalikan stok
+            //     $product = Product::where('uid', $item['product_uid'])->firstOrFail();
+            //     $product->increment('stok', $item['item_qty_total']);
+
+            //     //hapus order item
+            //     $item->delete();
+            // }
+
+            // //hapus shipping address
+            // ShippingAddress::where('order_uid', $request->order_uid)->delete();
+
+            // //hapus shipping detail
+            // ShippingDetail::where('order_uid', $request->order_uid)->delete();
+
+            // //hapus payment detail
+            // Payment::where('order_uid', $request->order_uid)->delete();
+
+            //hapus order status
+            // OrderStatus::where('order_uid', $request->order_uid)->delete();
+
+            //hapus order
+            // Order::where('uid', $request->order_uid)->delete();
+
+            $orderItems = OrderItem::where('order_uid', $request->order_uid)->get();
+
+            foreach ($orderItems as $item) {
+                //kembalikan stok
+                $product = Product::where('uid', $item['product_uid'])->first();
+
+                if ($product != null) {
+                    $product->increment('stok', $item['item_qty_total']);
+                }
+            }
+
+            //update status order
+            OrderStatus::where('order_uid', $request->order_uid)->update([
+                'status' => 'BATAL',
+                'note' => 'Orderan dibatalkan oleh user',
+            ]);
+
+            //update status payment
+            $payment = PaymentDetail::where('order_uid', $request->order_uid)->first();
+
+            if ($payment != null) {
+                $payment->update([
+                    'status' => 'BATAL',
+                    'note' => 'Orderan dibatalkan oleh user',
+                ]);
+
+                PaymentDetail::where('order_uid', $request->order_uid)
+                    ->update([
+                        'status' => 'BATAL',
+                        'note' => 'Orderan dibatalkan oleh user',
+                    ]);
+            }
+
+            //update status kurir
+            $courier = CourierOrder::where('order_uid', $request->order_uid)->first();
+
+            if ($courier != null) {
+                $courier->update([
+                    'status' => 'BATAL',
+                    'note' => 'Orderan dibatalkan oleh user',
+                ]);
+
+                $profile = CourierProfile::where('courier_account_uid', $courier->courier_account_uid)->firstOrFail();
+
+                if ($profile->status == 'BUSY') {
+                    $profile->update([
+                        'status' => 'READY',
+                    ]);
+                }
+            }
+
+        });
     }
 
     public function submitOrder($request)
     {
         DB::transaction(function () use ($request) {
-            $qty = [];
-            $price = [];
-            $shipping = [];
-            $app_fee = [];
-            $voucher = [];
-            $point = [];
-            $total = [];
-
             //cart items
             foreach ($request->items as $cartItem) {
                 $product = Product::where('uid', $cartItem['product_uid'])->firstOrFail();
@@ -119,6 +197,29 @@ class OrderService implements OrderServiceInterface
                     'item_price_total' => $product->final_price * $cartItem['item_qty_total'],
                     'note' => $cartItem['note'],
                 ]);
+
+                //kurangi stok sementara
+                $product->decrement('stok', $cartItem['item_qty_total']);
+            }
+
+            foreach ($request->shippings as $mitra) {
+                //shippind details
+                ShippingDetail::create([
+                    'order_uid' => $request->uid,
+                    'uid' => Str::uuid(),
+                    'mitra_uid' => $mitra['uid'],
+                    'name' => $mitra['name'],
+                    'address' => $mitra['address'],
+                    'phone' => $mitra['phone'],
+                    'shipping' => $mitra['shipping'],
+                    'type' => $mitra['type'],
+                    'latitude' => $mitra['latitude'],
+                    'longitude' => $mitra['longitude'],
+                    'distance' => $mitra['distance'],
+                    'distance_unit' => $mitra['distance_unit'],
+                    'price' => $mitra['price'],
+                    'time' => $mitra['time'],
+                ]);
             }
 
             //shipping address
@@ -134,10 +235,36 @@ class OrderService implements OrderServiceInterface
                 'phone' => $request->delivery['phone'],
             ]);
 
+            //payment
+            Payment::create([
+                'order_uid' => $request->uid,
+                'uid' => Str::uuid(),
+                'channel_code' => $request->payment['channel_code'],
+                'name' => $request->payment['name'],
+                'channel_category' => $request->payment['channel_category'],
+                'picture' => $request->payment['picture'],
+                'fee' => $request->payment['fee'],
+                'min' => $request->payment['min'],
+                'max' => $request->payment['max'],
+            ]);
+
+            PaymentDetail::create([
+                'order_uid' => $request->uid,
+                'uid' => Str::uuid(),
+                'channel_code' => $request->payment['channel_code'],
+                'extra' => $request->payment['extra'],
+            ]);
+
+            //order status
+            OrderStatus::create([
+                'order_uid' => $request->uid,
+                'uid' => Str::uuid(),
+            ]);
+
             //order
             Order::create([
                 'customer_account_uid' => $request->user()->uid,
-                'uid' => Str::uuid(),
+                'uid' => $request->uid,
                 'invoice' => 'INV-' . mt_rand(000001, 999999),
                 'qty_total' => $request->qty_total,
                 'price_total' => $request->price_total,
@@ -147,6 +274,11 @@ class OrderService implements OrderServiceInterface
                 'point_deduction' => $request->point_deduction,
                 'pay_total' => $request->pay_total,
             ]);
+
+            //cari kurir
+            foreach ($request->shippings as $mitra) {
+                event(new CourierRequestStatusEvent($mitra['uid'], $request));
+            }
         });
     }
 
@@ -154,12 +286,12 @@ class OrderService implements OrderServiceInterface
     {
         $uids = explode(',', preg_replace('/\s+/', '', $request->uids));
 
-        $datas = Product::where('stok', '>', 0)
-            ->whereIn('uid', $uids)
-            ->get();
+        foreach ($uids as $uid) {
+            $product = Product::where('uid', $uid)->firstOrFail();
 
-        $total = $datas->count();
-
-        return $total;
+            if ($product->stok == 0) {
+                abort(400, 'OUT_OF_STOCK');
+            }
+        }
     }
 }

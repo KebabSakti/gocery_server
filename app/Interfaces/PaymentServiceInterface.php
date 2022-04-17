@@ -6,7 +6,7 @@ interface PaymentServiceInterface
 {
     public function getPaymentChannels();
 
-    public function getDefaultPaymentChannel();
+    public function getDefaultPaymentChannel($request);
 
     public function ewallet($request);
 

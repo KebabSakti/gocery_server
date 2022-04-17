@@ -77,6 +77,7 @@ Route::group(['prefix' => 'v1'], function () {
                 Route::get('times', [v1\OrderController::class, 'time']);
                 Route::get('couriers/finds', [v1\OrderController::class, 'find_courier']);
                 Route::get('stocks', [v1\OrderController::class, 'stock']);
+                Route::get('cancel', [v1\OrderController::class, 'cancelOrder']);
                 Route::post('/', [v1\OrderController::class, 'store']);
             });
 
@@ -125,6 +126,11 @@ Route::group(['prefix' => 'v1'], function () {
         //TESTING ROUTE (DEV ONLY)
         Route::group(['prefix' => 'dev'], function () {
             Route::get('partners', [v1\DevController::class, 'partners']);
+
+            Route::group(['middleware' => 'auth:partner'], function () {
+                Route::post('orders/accept', [v1\DevController::class, 'acceptOrder']);
+                Route::post('orders/reject', [v1\DevController::class, 'rejectOrder']);
+            });
         });
 
     });

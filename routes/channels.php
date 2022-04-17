@@ -17,6 +17,6 @@ Broadcast::channel('partner.{id}', function ($user, $id) {
     return true;
 });
 
-Broadcast::channel('customer.{id}', function ($user, $id) {
+Broadcast::channel('order.{id}', function ($user, $id) {
     return true;
 });

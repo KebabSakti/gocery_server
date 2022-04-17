@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\PaymentServiceInterface;
 use App\Models\PaymentChannel;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class PaymentService implements PaymentServiceInterface
@@ -26,13 +27,30 @@ class PaymentService implements PaymentServiceInterface
         return $payments;
     }
 
-    public function getDefaultPaymentChannel()
+    public function getDefaultPaymentChannel($request)
     {
         $payment = PaymentChannel::where('active', true)
             ->where('default', true)
             ->first();
 
-        return $payment;
+        // $payment = DB::table('payment_channels')
+        //     ->select('payment_channels.*', 'payment_details.*', 'orders.uid as ouid')
+        //     ->leftJoin('payment_details', 'payment_channels.channel_code', '=', 'payment_details.channel_code')
+        //     ->leftJoin('orders', 'payment_details.order_uid', '=', 'orders.uid')
+        // // ->leftJoin('orders', function ($join) use ($request) {
+        // //     $join->on('payment_details.order_uid', '=', 'orders.uid')
+        // //         ->where('orders.customer_account_uid', $request->user()->uid);
+        // // })
+        //     ->orderByDesc('payment_details.created_at')
+        //     ->first();
+
+        $order = DB::table('orders')
+        // ->select('orders.*', 'payment_details.*')
+            ->join('payment_details', 'payment_details.order_uid', '=', 'orders.uid')
+            ->where('orders.customer_account_uid', $request->user()->uid)
+            ->first();
+
+        return $order;
     }
 
     public function ewallet($request)

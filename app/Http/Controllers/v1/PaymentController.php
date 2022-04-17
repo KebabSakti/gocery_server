@@ -25,13 +25,13 @@ class PaymentController extends Controller
         return $result;
     }
 
-    public function channel_default()
+    public function channel_default(Request $request)
     {
-        $channel = $this->service->getDefaultPaymentChannel();
+        $channel = $this->service->getDefaultPaymentChannel($request);
 
-        $result = new PaymentChannelResource($channel);
+        // $result = new PaymentChannelResource($channel);
 
-        return $result;
+        return $channel;
     }
 
     public function ewallet(Request $request)
