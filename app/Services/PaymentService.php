@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Interfaces\PaymentServiceInterface;
 use App\Models\PaymentChannel;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class PaymentService implements PaymentServiceInterface
@@ -44,13 +43,13 @@ class PaymentService implements PaymentServiceInterface
         //     ->orderByDesc('payment_details.created_at')
         //     ->first();
 
-        $order = DB::table('orders')
-        // ->select('orders.*', 'payment_details.*')
-            ->join('payment_details', 'payment_details.order_uid', '=', 'orders.uid')
-            ->where('orders.customer_account_uid', $request->user()->uid)
-            ->first();
+        // $order = DB::table('orders')
+        // // ->select('orders.*', 'payment_details.*')
+        //     ->join('payment_details', 'payment_details.order_uid', '=', 'orders.uid')
+        //     ->where('orders.customer_account_uid', $request->user()->uid)
+        //     ->first();
 
-        return $order;
+        return $payment;
     }
 
     public function ewallet($request)
